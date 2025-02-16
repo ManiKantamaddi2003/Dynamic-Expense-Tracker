@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Expense Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./Tracker.css">
+</head>
+
+<body>
+    <div class="header">
+        <p class="m-0">Expense Tracker
+            <img src="./spending.png" alt="" width="35px">
+        </p>
+    </div>
+
+    <div class="input-form">
+        <div class="form-floating inputs">
+            <input type="date" class="form-control" id="transaction-date">
+            <label for="transaction-date">Date</label>
+        </div>
+        <div class="form-floating inputs">
+            <input type="number" class="form-control" id="amount">
+            <label for="amount">Amount</label>
+        </div>
+        
+        <div class="form-floating inputs">
+            <select class="form-select" id="transaction-type">
+                <option selected>Transaction Type</option>
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+            </select>
+            <label for="transaction-type">Transaction Type</label>
+        </div>
+
+        <button class="btn" id="add-button">+</button>
+    </div>
+
+    <div class="cards mt-4">
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title m-0">Total Income
+                    <img src="./wallet-filled-money-tool.png" alt="" width="35px">
+                </h5>
+                <h1 class="m-0">
+                    <img src="./currency.png" alt="" width="35px">
+                    <span id="totalIncome" class="m-0">0</span>
+                </h1>
+            </div>
+        </div>
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title m-0">Total Expense
+                    <img src="./expenses.png" alt="" width="40px">
+                </h5>
+                <h1 class="m-0">
+                    <img src="./currency.png" alt="" width="35px">
+                    <span id="expense" class="m-0">0</span>
+                </h1>
+            </div>
+        </div>
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title m-0">Balance
+                    <img src="./rupee.png" alt="" width="35px">
+                </h5>
+                <h1 class="m-0">
+                    <img src="./currency.png" alt="" width="35px">
+                    <span id="balance" class="m-0">0</span>
+                </h1>
+            </div>
+        </div>
+    </div>
+    
+    <table class="transaction-table mt-3">
+        <tr id="header-row">
+            <th>Amount</th>
+            <th>Transaction Type</th>
+            <th>Transaction Date</th>
+            <th>Action</th>
+        </tr>
+    </table>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const addButton = document.getElementById("add-button");
+            const amountInput = document.getElementById("amount");
+            const transactionType = document.getElementById("transaction-type");
+            const transactionDate = document.getElementById("transaction-date");
+            const transactionTable = document.querySelector(".transaction-table");
+            const totalIncomeElement = document.getElementById("totalIncome");
+            const totalExpenseElement = document.getElementById("expense");
+            const balanceElement = document.getElementById("balance");
+
+            let totalIncome = 0;
+            let totalExpense = 0;
+
+            function updateTotals() {
+                balanceElement.textContent = totalIncome - totalExpense;
+                totalIncomeElement.textContent = totalIncome;
+                totalExpenseElement.textContent = totalExpense;
+            }
+
+            function addTransaction() {
+                const amount = parseFloat(amountInput.value);
+                const type = transactionType.value;
+                const date = transactionDate.value;
+
+                if (isNaN(amount) || !date || type === "Transaction Type") {
+                    alert("Please enter valid transaction details.");
+                    return;
+                }
+
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${amount}</td>
+                    <td>${type}</td>
+                    <td>${date}</td>
+                    <td><button class="btn btn-sm delete-button"> <img src="./recycle-bin.png" alt="" width="35px"> </button></td>
+                `;
+
+                transactionTable.appendChild(row);
+
+                if (type === "income") {
+                    totalIncome += amount;
+                } else {
+                    totalExpense += amount;
+                }
+
+                updateTotals();
+
+                amountInput.value = "";
+                transactionDate.value = "";
+                transactionType.value = "Transaction Type";
+
+                row.querySelector(".delete-button").addEventListener("click", function () {
+                    if (type === "income") {
+                        totalIncome -= amount;
+                    } else {
+                        totalExpense -= amount;
+                    }
+                    row.remove();
+                    updateTotals();
+                });
+            }
+
+            addButton.addEventListener("click", addTransaction);
+        });
+    </script>
+</body>
+</html>
